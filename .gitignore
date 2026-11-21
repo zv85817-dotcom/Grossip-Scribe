@@ -1,4 +1,4 @@
-# 每期制作文件、本机设置和缓存
+# Episode assets, local settings, and caches
 /output/
 /episodes/
 /samples/
@@ -18,7 +18,7 @@ Thumbs.db
 *.log
 *.zip
 
-# 本机凭据与会话文件
+# Local credentials and session files
 .env
 .env.*
 .envrc
@@ -40,7 +40,7 @@ id_ed25519*
 *.p12
 *.pfx
 
-# 数据库和常见导出文件
+# Databases and common export files
 *.db
 *.db-*
 *.sqlite

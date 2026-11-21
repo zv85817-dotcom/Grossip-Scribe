@@ -1,43 +1,43 @@
-# Player Grossip 操作手册
+# Player Grossip: Production guide
 
-## 从一句话开始
+## Start with the story
 
-全套从一张看得清人物和事件的截图、一个有效链接或一句选题开始。先读主聊天提供的题材和最新更正，再看附件、参考图和旧产物。可读到用户指明的其他对话时，再用它确认定稿图或上一期要求。遇到识别不清的文件，先尝试查看原件和上下文。上下文仍不足以确认题材时，只问缺失的关键信息，已确定的部分继续做。
+A recognizable screenshot, a link, or a short topic is enough. Read the user's latest corrections first, then review the attachments and any accessible approved files. If an image is unclear, inspect the original and available context. Ask only for the missing detail needed to identify the story.
 
-用独立目录保存一期。可按用户指定的项目和磁盘落盘，公开技能包里的路径保持相对。全套生成允许在中间步骤自行核验和修正。只修配色、球衣、发色、道具比例或某一版封面时，以已认可的版本为参考，改动集中在用户点名的地方。
+Keep each episode in its own directory and respect the requested location. Use relative paths in the shareable project. For a revision to color, jersey, hair, props, or one cover format, start from the approved reference and focus on the requested changes.
 
-## 选择工具
+## Choose the tools
 
-- 核查和配图用当前环境的网页搜索、图片搜索和文件工具。需要在 Codex 内置浏览器中打开网页时，按环境可用的 browser 技能查看。搜索结果摘要是线索，图源以打开的页面和实际图像为准。
-- 海报用可用的 imagegen 或同类生成、编辑工具。用 Pillow、FFmpeg 或等效图像工具做等比导出。FFmpeg 技能的安装方式见项目根目录 README。生成、裁边、最终验收各在自己的步骤做。
-- 修改本技能包时，用 skill-creator 的格式检查和交付核验；制作新一期时运行随包的 Python 校验脚本。技能包依赖当前环境具备相应能力，工具名称不同也可以照同样步骤完成。
+- Use web search and image search to locate and verify sources. Search snippets are leads; open the source page and inspect the image itself. Use the browser skill when inspecting sources in Codex's browser.
+- Use imagegen or an equivalent generator/editor for covers. Use Pillow, FFmpeg, or another image tool for proportional resizing, and inspect the actual exports afterward. See the [README](../../../../README.md) for optional FFmpeg skill setup.
+- Use skill-creator and release checks when maintaining the skill. When producing an episode, use the bundled Python checker. Equivalent tools are fine when the default tools are unavailable.
 
-## 先找到情节，再找原图
+## Source the photos
 
-1. 用当前环境的网页搜索查姓名、事件关键词、发生年份和后续关键词。打开原帖、报道或官方资料确认发布时间、原始语境和最新能确认的进展。冲突时优先追到当事人回应或有直接引语的采访。
-2. 用图片搜索扩大候选，也可到已核实的报道内找原配图。优先找有现场感的眼神、互动、道具和反应。题材确实围绕某个物件或身体局部时，找能核对来源的真实特写，再用全景或人物图交代场合。
-3. 从公开来源保存可获得的原图。失效、需要登录或只有模糊缩略图时，换可公开访问的来源。仍缺的单独列链接与状态。打开下载的文件看一遍，排除报错页、重复图、模糊图和错人错场次。来源说明随图保存。保留可查到的署名和使用条件。
-4. 保留独立编号原图，另做可看清画面和编号的联系表。选过一轮后保留原编号，单独给被点中的图。来源条目首行用「编号 空格 说明」，另起一行写「来源：」及其网页链接。另有原图直链时用「原图：」单独记录。资料照、转载截图、网友梗图均标明身份和语境。
+1. Search names with the event, year, and follow-up terms. Open original posts, interviews, reports, and official records to confirm dates, context, and the latest verifiable development. Resolve conflicting accounts with direct statements where possible.
+2. Search for candid expressions, reactions, interactions, and real props. If an object or body detail is central to the story, find an attributable close-up and a wider photo that gives it context.
+3. Save available originals from public sources. If there is a broken link, login gate, or unusable thumbnail, look for a public alternative. Record unresolved links separately. Check files for errors, duplicates, blur, and misidentification. Retain credits and known usage terms.
+4. Keep numbered images as separate files and create a contact sheet with readable numbers. Once the user selects images, retain their IDs. In the source list, start each entry with its ID, a space, and a description. Use the literal prefix `来源:` for the source page URL. A direct image URL can go on a separate line. Label archive photos, reposted screenshots, and memes with their actual context.
 
-## 成图与像素
+## Compose and export the covers
 
-- 能使用内置图片生成时，优先按当前环境的 imagegen 技能操作。制作新一期时，先按题材生成横版。做竖版或返工时，先打开定稿或用户参考图，再用它做编辑参考。提示词具体写人物反应、场景、道具、色调、当时的辨识细节、画面上的准确英文和安全边距。先检查成图再移动或复制到当期目录。
-- 保留事件意象的张力。例如浴缸和泡沫表现一句浴缸梗，人物手里的手机交代消息来源。会所门后露出教堂体现地点后来的反转。做事件象征时保持插画的读法。两版按同一套画风出图，构图分别安排。封面的英文标题要短，人物和一处情节画面优先。
-- 横版用 16:9 构图生成，竖版用接近 4:5 的构图生成。生成器的宽高可能和最终文件不同。等比缩放和少量边缘裁剪后分别输出规定尺寸的 PNG。缩放前看尺寸，缩放后再打开最终图。旧 9:16 竖图需要按新版构图重做。
-- 用 FFmpeg 时，以下命令适用于比例已经接近 4:5、容许少量中心裁边的竖图。若人物、道具或字会被裁，回到构图调整。横版将滤镜里的宽高改为 1920 和 1080，输出名使用 `poster_1920x1080.png`。也可用 Pillow 的等比裁边和重采样操作。两个最终值始终按宽×高读取。
+- Generate the landscape cover first. When creating the portrait version or revising artwork, open the approved reference before using it as an editing input. Prompt for the exact English headline, safe margins, subjects and reactions, period details, scene, props, lighting, and palette. Inspect the generated art before copying it to the episode folder.
+- Use story objects as visual clues. For example, a bathtub with bubbles can allude to a viral quote, and a church visible beyond a club doorway can show what happened to the venue later. Let the scene do most of the work. Keep the typography short and the imagery clearly illustrative.
+- Generate in 16:9 for landscape and close to 4:5 for portrait. Export at the required pixel dimensions even if the generator uses a different resolution. Recompose old 9:16 artwork for the new portrait format where needed.
+- This FFmpeg command is suitable for portrait artwork that is already close to 4:5 and has spare room around the edges. If the crop cuts into lettering, faces, or the key prop, recompose before exporting. For landscape, use `1920:1080` in both filter stages and output `poster_1920x1080.png`. Pillow can also resize and crop proportionally.
 
 ```sh
 ffmpeg -i portrait_source.png -vf "scale=522:652:force_original_aspect_ratio=increase:flags=lanczos,crop=522:652,setsar=1" -frames:v 1 -update 1 poster_522x652.png
 ```
 
-## 打包和验收
+## Package and check
 
-新包以当期文件为根，把两份分开的纯文字稿、来源核查、独立编号原图、预览、出处、两张最终 PNG 和实际出图提示词加入 ZIP。生成参考、未选候选和中间图留在当期目录备查。旧素材包先复制保留项到同目录临时 ZIP、加入新版竖图与提示词，通过验证再替换原包。旧封面原件留在磁盘。
+Place the two text drafts, fact-check notes, numbered images, contact sheet, source list, final PNGs, and actual cover prompts at their episode-relative paths in the ZIP. Keep unused candidates, references, and intermediate renders outside the bundle. For old episodes, stage the update in a temporary ZIP in the same folder, check the preserved files and new portrait, and replace the original bundle after validation.
 
-从项目根目录执行校验，传真实当期路径。只校验双封面时可以省掉 ZIP 参数。整套校验 CLI 使用 Python 3 标准库。
+From the repository root, pass the actual episode folder and ZIP. To check just the two final PNGs, omit `--bundle` and `--full`. The checker uses the Python 3 standard library.
 
 ```sh
-python .agents/skills/player-grossip/scripts/check_covers.py "./output/episode" --bundle "./output/episode/本期完整素材包.zip" --full
+python .agents/skills/player-grossip/scripts/check_covers.py "./output/episode" --bundle "./output/episode/episode-package.zip" --full
 ```
 
-校验脚本检查 PNG 结构和尺寸、ZIP 的完整性、稿件基本格式、核查说明是否入包，以及编号图与出处条目是否一一对应。交付前仍要打开双封面和配图预览，核对标题文字、栏目名、场景、人物和图源。浏览能力不足时，交能核实的部分并写明缺项。生成能力不足时，给两版提示词以及可以继续使用的稿件和配图。
+The checker validates PNG structure and pixel dimensions, ZIP integrity, draft formatting, required notes, and photo-to-source matching. Open the final covers and contact sheet to review details that the script cannot judge. If browsing or generating images is unavailable, hand over the finished material and spell out what remains.

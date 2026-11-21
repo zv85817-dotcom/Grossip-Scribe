@@ -1,4 +1,4 @@
-"""核验两版 PNG、素材包和编号配图出处。"""
+"""Validate final PNG covers, the episode ZIP, and its photo source list."""
 
 import argparse
 import re
@@ -17,7 +17,7 @@ COVERS = {
 
 def check_size(path, expected):
     def invalid():
-        return ValueError(f"{path.name} 不是完整的 PNG，或 PNG 数据已损坏")
+        return ValueError(f"{path.name} is not a complete PNG or contains invalid PNG data")
 
     with path.open("rb") as image:
         if image.read(8) != b"\x89PNG\r\n\x1a\n":
@@ -48,7 +48,7 @@ def check_size(path, expected):
                 width, height = struct.unpack(">II", part[:8])
                 if (width, height) != expected:
                     raise ValueError(
-                        f"{path.name} 实际为 {width}×{height}，要求 {expected[0]}×{expected[1]}"
+                        f"{path.name} is {width}×{height}; expected {expected[0]}×{expected[1]}"
                     )
                 seen_header = True
             elif kind == b"IDAT":
@@ -63,19 +63,19 @@ def check_bundle(bundle_path, directory, full=False):
     with ZipFile(bundle_path) as bundle:
         names = bundle.namelist()
         if len(names) != len(set(names)):
-            raise ValueError("素材包内有重名条目")
+            raise ValueError("The episode ZIP contains duplicate entry names.")
         if any(PurePosixPath(name).name == "poster_1080x1920.png" for name in names):
-            raise ValueError("素材包内仍有旧版 1080×1920 封面")
+            raise ValueError("The episode ZIP still contains the old 1080×1920 cover.")
         failed = bundle.testzip()
         if failed is not None:
-            raise ValueError(f"素材包内文件 CRC 校验失败：{failed}")
+            raise ValueError(f"ZIP checksum failed for {failed}")
 
         for name in COVERS:
             entries = [entry for entry in names if PurePosixPath(entry).name == name]
             if len(entries) != 1:
-                raise ValueError(f"素材包内需要且只应有一份 {name}")
+                raise ValueError(f"Expected exactly one {name} in the ZIP.")
             if bundle.read(entries[0]) != (directory / name).read_bytes():
-                raise ValueError(f"素材包内的 {name} 与交付文件内容不同")
+                raise ValueError(f"The ZIP copy of {name} differs from the delivered file.")
 
         if full:
             check_full_bundle(bundle, names)
@@ -87,7 +87,7 @@ def check_full_bundle(bundle, names):
         for candidate in candidates:
             if candidate in names and bundle.getinfo(candidate).file_size > 0:
                 return candidate
-        raise ValueError(f"素材包缺少有效文件：{' 或 '.join(candidates)}")
+        raise ValueError(f"The ZIP is missing a nonempty file: {' or '.join(candidates)}")
 
     scripts = (
         ("中文稿.txt", ("主标题", "副标题")),
@@ -102,11 +102,11 @@ def check_full_bundle(bundle, names):
                 for label, line in zip(labels, lines[:2])
             )
         ):
-            raise ValueError(f"{name} 需要单独的主标题、副标题和一行空行")
+            raise ValueError(f"{name} needs a title, a subtitle, and a blank line before the body.")
         body = "\n".join(lines[3:]).rstrip()
         paragraphs = re.split(r"\n[^\S\n]*\n+", body) if body else []
         if not paragraphs or any(not re.match(r"^\u3000{2}\S", p) for p in paragraphs):
-            raise ValueError(f"{name} 每段正文需以两个全角空格开头")
+            raise ValueError(f"Each body paragraph in {name} must start with two ideographic spaces.")
 
     for name in (
         "配图编号预览.jpg",
@@ -122,9 +122,9 @@ def check_full_bundle(bundle, names):
         if match and bundle.getinfo(name).file_size > 0:
             photo_ids.append(int(match[1]))
     if not photo_ids:
-        raise ValueError("素材包缺少单独保存的编号配图")
+        raise ValueError("The ZIP is missing individual numbered photos.")
     if len(set(photo_ids)) != len(photo_ids):
-        raise ValueError("素材包的配图编号重复")
+        raise ValueError("The ZIP contains duplicate photo numbers.")
 
     require_file("文稿核查.txt", "素材与核查说明.md")
     sources = require_file("配图出处.txt", "图片情节与出处.txt")
@@ -135,9 +135,9 @@ def check_full_bundle(bundle, names):
         number = int(entry[1])
         end = entries[index + 1].start() if index + 1 < len(entries) else len(content)
         if number in mapped_ids:
-            raise ValueError(f"出处表编号 {number:02d} 重复")
+            raise ValueError(f"Photo number {number:02d} is duplicated in the source list.")
         if not re.search(r"(?im)^来源[：:\t 　]+https?://\S+", content[entry.end():end]):
-            raise ValueError(f"配图 {number:02d} 的出处条目缺少来源页链接")
+            raise ValueError(f"Photo {number:02d} has no source page URL in the source list.")
         mapped_ids.add(number)
 
     missing = sorted(set(photo_ids) - mapped_ids)
@@ -145,33 +145,33 @@ def check_full_bundle(bundle, names):
     if missing or extra:
         detail = []
         if missing:
-            detail.append("缺少编号出处 " + "、".join(f"{n:02d}" for n in missing))
+            detail.append("Missing source entries for photo numbers " + ", ".join(f"{n:02d}" for n in missing))
         if extra:
-            detail.append("出处表列了包内不存在的编号 " + "、".join(f"{n:02d}" for n in extra))
-        raise ValueError("；".join(detail))
+            detail.append("The source list includes photo numbers absent from the ZIP: " + ", ".join(f"{n:02d}" for n in extra))
+        raise ValueError("; ".join(detail))
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("directory", type=Path, help="包含两张最终封面的当期目录")
-    parser.add_argument("--bundle", type=Path, help="待检查的完整素材包 ZIP 路径")
-    parser.add_argument("--full", action="store_true", help="同时检查完整交付所需的文稿和配图")
+    parser.add_argument("directory", type=Path, help="Episode directory containing both final covers")
+    parser.add_argument("--bundle", type=Path, help="Path to the complete episode ZIP")
+    parser.add_argument("--full", action="store_true", help="Also validate the drafts, photos, and supporting files")
     args = parser.parse_args()
     if args.full and args.bundle is None:
-        parser.error("--full 需要同时指定 --bundle")
+        parser.error("--full requires --bundle")
     try:
         for name, expected in COVERS.items():
             check_size(args.directory / name, expected)
         if args.bundle is not None:
             check_bundle(args.bundle, args.directory, args.full)
     except (OSError, ValueError, BadZipFile, RuntimeError) as error:
-        print(f"检查失败：{error}", file=sys.stderr)
+        print(f"Validation failed: {error}", file=sys.stderr)
         return 1
-    print("PNG 结构和尺寸通过：横版 1920×1080，竖版 522×652")
+    print("PNG structure and dimensions verified: 1920×1080 landscape, 522×652 portrait.")
     if args.bundle is not None:
-        print("ZIP 完整性及包内外封面一致性通过。")
+        print("ZIP integrity and cover matches verified.")
     if args.full:
-        print("中英文稿格式、编号配图、出处、预览和封面提示词通过。")
+        print("Draft formatting, numbered photos, sources, preview, and cover prompts verified.")
     return 0
 
 

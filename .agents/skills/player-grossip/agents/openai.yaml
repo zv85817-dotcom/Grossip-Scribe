@@ -1,4 +1,4 @@
 interface:
   display_name: "Player Grossip"
-  short_description: "制作 NBA 花边双语稿、猎奇配图和双尺寸海报，并按期打包"
-  default_prompt: "用 $player-grossip 按这张截图做一期完整的 NBA 花边稿和配套素材。"
+  short_description: "NBA gossip stories, sourced photos, and two cover formats"
+  default_prompt: "Use $player-grossip to produce a complete NBA gossip episode from this screenshot."
